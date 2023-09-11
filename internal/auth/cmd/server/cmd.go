@@ -8,6 +8,7 @@ type app struct {
 	*cobra.Command
 }
 
+//nolint:revive
 func NewApp() *app {
 	cmd := &cobra.Command{
 		Use:   "server",
