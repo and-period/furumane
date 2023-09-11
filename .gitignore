@@ -1,0 +1,40 @@
+# not ignore file
+!.keep
+
+# proto file
+*.pb.go
+*.pb.validate.go
+
+# coverage file
+coverage.txt
+
+# build file
+app
+
+# external library
+third_party
+
+# binary file
+bin
+
+# tmp file
+tmp
+
+# Serverless directories
+.serverless
+
+# golang output binary directory
+bin
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out

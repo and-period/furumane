@@ -1,0 +1,21 @@
+package server
+
+import (
+	"github.com/spf13/cobra"
+)
+
+type app struct {
+	*cobra.Command
+}
+
+func NewApp() *app {
+	cmd := &cobra.Command{
+		Use:   "server",
+		Short: "auth service server",
+	}
+	app := &app{Command: cmd}
+	app.RunE = func(c *cobra.Command, args []string) error {
+		return app.run()
+	}
+	return app
+}
