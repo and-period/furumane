@@ -26,7 +26,7 @@ func TestNewClient(t *testing.T) {
 				Socket:   "tcp",
 				Host:     os.Getenv("DB_HOST"),
 				Port:     os.Getenv("DB_PORT"),
-				Database: "users",
+				Database: os.Getenv("DB_DATABASE"),
 				Username: os.Getenv("DB_USERNAME"),
 				Password: os.Getenv("DB_PASSWORD"),
 			},
@@ -38,7 +38,7 @@ func TestNewClient(t *testing.T) {
 				Socket:   "tcp",
 				Host:     "127.0.0.1",
 				Port:     "80",
-				Database: "users",
+				Database: "",
 				Username: "",
 				Password: "",
 			},
@@ -78,7 +78,7 @@ func TestBeginAndClose(t *testing.T) {
 		Socket:   "tcp",
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
-		Database: "users",
+		Database: os.Getenv("DB_DATABASE"),
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
 	}
@@ -98,7 +98,7 @@ func TestTransaction(t *testing.T) {
 		Socket:   "tcp",
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
-		Database: "users",
+		Database: os.Getenv("DB_DATABASE"),
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
 	}
@@ -188,6 +188,9 @@ func setEnv() {
 	}
 	if os.Getenv("DB_PORT") == "" {
 		os.Setenv("DB_PORT", "3326")
+	}
+	if os.Getenv("DB_DATABASE") == "" {
+		os.Setenv("DB_DATABASE", "furumane")
 	}
 	if os.Getenv("DB_USERNAME") == "" {
 		os.Setenv("DB_USERNAME", "root")

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/and-period/furumane/internal/auth/database"
-	"github.com/and-period/furumane/pkg/jst"
 	"github.com/and-period/furumane/pkg/mysql"
 	gmysql "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +17,7 @@ import (
 
 var (
 	dbClient *mysql.Client
-	current  = jst.Date(2023, 1, 1, 0, 0, 0, 0)
+	current  = time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
 )
 
 func TestMain(m *testing.M) {
@@ -43,7 +43,7 @@ func newTestDBClient() (*mysql.Client, error) {
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
 	}
-	return mysql.NewClient(params, mysql.WithLocation(jst.Location()))
+	return mysql.NewClient(params)
 }
 
 func deleteAll(ctx context.Context) error {
