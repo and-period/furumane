@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package proto.auth;
+
+option go_package = "github.com/and-period/furumane/proto/auth";
+
+enum ProviderType {
+  UNKNOWN = 0;
+  EMAIL   = 1; // メールアドレス認証
+  OAUTH   = 2; // OAuth認証
+}

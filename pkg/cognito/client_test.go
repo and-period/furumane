@@ -2,7 +2,6 @@ package cognito
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -80,7 +79,7 @@ func TestAuthError(t *testing.T) {
 		},
 		{
 			name:   "unknown",
-			err:    errors.New("some error"),
+			err:    assert.AnError,
 			expect: ErrUnknown,
 		},
 	}

@@ -5,6 +5,7 @@ package proto.auth;
 option go_package = "github.com/and-period/furumane/proto/auth";
 
 import "validate/validate.proto";
+import "proto/auth/admin.proto";
 import "proto/auth/admin_auth.proto";
 
 service AuthService {
@@ -14,6 +15,8 @@ service AuthService {
   rpc SignInAdminWithOAuth(SignInAdminWithOAuthRequest) returns (SignInAdminWithOAuthResponse);
   // 管理者サインアウト
   rpc SignOutAdmin(SignOutAdminRequest) returns (SignOutAdminResponse);
+  // 管理者アクセストークンの更新
+  rpc RefreshAdminToken(RefreshAdminTokenRequest) returns (RefreshAdminTokenResponse);
   // 管理者登録（メールアドレス認証）
   rpc SignUpAdmin(SignUpAdminRequest) returns (SignUpAdminResponse);
   // 管理者登録後の確認 (メールアドレス認証)
@@ -22,8 +25,6 @@ service AuthService {
   rpc SignUpAdminWithOAuth(SignUpAdminWithOAuthRequest) returns (SignUpAdminWithOAuthResponse);
   // 管理者認証情報取得
   rpc GetAdmin(GetAdminRequest) returns (GetAdminResponse);
-  // 管理者アクセストークンの更新
-  rpc RefreshAdminToken(RefreshAdminTokenRequest) returns (RefreshAdminTokenResponse);
   // 管理者メールアドレス更新
   rpc UpdateAdminEmail(UpdateAdminEmailRequest) returns (UpdateAdminEmailResponse);
   // 管理者メールアドレス更新後の確認
@@ -67,6 +68,22 @@ message SignUpAdminRequest {
   string password_confirmation = 3 [(validate.rules).string = {min_len: 1}];                                                          // パスワード（確認用）
 }
 
+message RefreshAdminTokenRequest {
+  string refresh_token = 1 [(validate.rules).string = {min_len: 1}]; // リフレッシュトークン
+}
+
+message RefreshAdminTokenResponse {
+  AdminAuth auth = 1; // 認証情報
+}
+
+message GetAdminRequest {
+  string access_token = 1 [(validate.rules).string = {min_len: 1}]; // アクセストークン
+}
+
+message GetAdminResponse {
+  Admin admin = 1; // 管理者情報
+}
+
 message SignUpAdminResponse {
   string admin_id = 1 [(validate.rules).string = {min_len: 1}]; // 管理者ID
 }
@@ -83,23 +100,7 @@ message SignUpAdminWithOAuthRequest {
 }
 
 message SignUpAdminWithOAuthResponse {
-  string admin_id = 1 [(validate.rules).string = {min_len: 1}]; // 管理者ID
-}
-
-message GetAdminRequest {
-  string access_token = 1 [(validate.rules).string = {min_len: 1}]; // アクセストークン
-}
-
-message GetAdminResponse {
-  AdminAuth auth = 1; // 認証情報
-}
-
-message RefreshAdminTokenRequest {
-  string refresh_token = 1 [(validate.rules).string = {min_len: 1}]; // リフレッシュトークン
-}
-
-message RefreshAdminTokenResponse {
-  AdminAuth auth = 1; // 認証情報
+  Admin admin = 1; // 管理者情報
 }
 
 message UpdateAdminEmailRequest {
@@ -117,7 +118,7 @@ message VerifyAdminEmailRequest {
 message VerifyAdminEmailResponse {}
 
 message UpdateAdminPasswordRequest {
-  string email                 = 1 [(validate.rules).string = {min_len: 1, max_len: 256, email: true}];                               // メールアドレス
+  string access_token          = 1 [(validate.rules).string = {min_len: 1}];                                                          // アクセストークン
   string old_password          = 2 [(validate.rules).string = {min_len: 1}];                                                          // 現在のパスワード
   string new_password          = 3 [(validate.rules).string = {min_len: 8, max_len: 32, pattern: "^[a-zA-Z0-9_!@#$_%^&*.?()-=+]*$"}]; // 新しいパスワード
   string password_confirmation = 4 [(validate.rules).string = {min_len: 1}];                                                          // パスワード（確認用）

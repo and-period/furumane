@@ -6,8 +6,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/and-period/furumane/internal/auth/database"
 	"github.com/and-period/furumane/pkg/cognito"
 	"github.com/and-period/furumane/pkg/jst"
+	"github.com/and-period/furumane/pkg/uuid"
 	"github.com/and-period/furumane/proto/auth"
 	"go.uber.org/zap"
 	"golang.org/x/sync/singleflight"
@@ -17,6 +19,7 @@ import (
 
 type Params struct {
 	WaitGroup *sync.WaitGroup
+	Database  *database.Database
 	AdminAuth cognito.Client
 	UserAuth  cognito.Client
 }
@@ -27,8 +30,10 @@ type service struct {
 	logger      *zap.Logger
 	waitGroup   *sync.WaitGroup
 	sharedGroup *singleflight.Group
+	db          *database.Database
 	adminAuth   cognito.Client
 	userAuth    cognito.Client
+	uuid        func() string
 }
 
 type options struct {
@@ -55,8 +60,10 @@ func NewService(params *Params, opts ...Option) auth.AuthServiceServer {
 		logger:      dopts.logger,
 		waitGroup:   params.WaitGroup,
 		sharedGroup: &singleflight.Group{},
+		db:          params.Database,
 		adminAuth:   params.AdminAuth,
 		userAuth:    params.UserAuth,
+		uuid:        uuid.New,
 	}
 }
 
@@ -69,15 +76,19 @@ func gRPCError(err error) error {
 	case errors.Is(err, context.Canceled),
 		errors.Is(err, cognito.ErrCanceled):
 		return status.Error(codes.Canceled, err.Error())
-	case errors.Is(err, cognito.ErrInvalidArgument):
-		return status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, context.DeadlineExceeded),
-		errors.Is(err, cognito.ErrTimeout):
+		errors.Is(err, cognito.ErrTimeout),
+		errors.Is(err, database.ErrDeadlineExceeded):
 		return status.Error(codes.DeadlineExceeded, err.Error())
-	case errors.Is(err, cognito.ErrAlreadyExists):
+	case errors.Is(err, database.ErrNotFound):
+		return status.Error(codes.NotFound, err.Error())
+	case errors.Is(err, cognito.ErrAlreadyExists),
+		errors.Is(err, database.ErrAlreadyExists):
 		return status.Error(codes.AlreadyExists, err.Error())
 	case errors.Is(err, cognito.ErrResourceExhausted):
 		return status.Error(codes.ResourceExhausted, err.Error())
+	case errors.Is(err, database.ErrFailedPrecondition):
+		return status.Error(codes.FailedPrecondition, err.Error())
 	case errors.Is(err, cognito.ErrUnauthenticated),
 		errors.Is(err, cognito.ErrNotFound):
 		return status.Error(codes.Unauthenticated, err.Error())

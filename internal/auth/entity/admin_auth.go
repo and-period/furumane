@@ -13,9 +13,9 @@ type AdminAuth struct {
 	ExpiresIn    int32  // 有効期限
 }
 
-func NewAdminAuth(adminID string, rs *cognito.AuthResult) *AdminAuth {
+func NewAdminAuth(admin *Admin, rs *cognito.AuthResult) *AdminAuth {
 	return &AdminAuth{
-		AdminID:      adminID,
+		AdminID:      admin.ID,
 		AccessToken:  rs.AccessToken,
 		RefreshToken: rs.RefreshToken,
 		ExpiresIn:    rs.ExpiresIn,

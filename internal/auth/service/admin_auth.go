@@ -53,21 +53,6 @@ func (s *service) SignOutAdmin(ctx context.Context, req *auth.SignOutAdminReques
 	return &auth.SignOutAdminResponse{}, nil
 }
 
-func (s *service) GetAdmin(ctx context.Context, req *auth.GetAdminRequest) (*auth.GetAdminResponse, error) {
-	if err := req.ValidateAll(); err != nil {
-		return nil, invalidArgument(err)
-	}
-	rs := &cognito.AuthResult{AccessToken: req.AccessToken}
-	admin, err := s.getAdminAuth(ctx, rs)
-	if err != nil {
-		return nil, gRPCError(err)
-	}
-	res := &auth.GetAdminResponse{
-		Auth: admin.Proto(),
-	}
-	return res, nil
-}
-
 func (s *service) RefreshAdminToken(ctx context.Context, req *auth.RefreshAdminTokenRequest) (*auth.RefreshAdminTokenResponse, error) {
 	if err := req.ValidateAll(); err != nil {
 		return nil, invalidArgument(err)
@@ -91,5 +76,9 @@ func (s *service) getAdminAuth(ctx context.Context, rs *cognito.AuthResult) (*en
 	if err != nil {
 		return nil, err
 	}
-	return entity.NewAdminAuth(username, rs), nil
+	admin, err := s.db.Admin.GetByCognitoID(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	return entity.NewAdminAuth(admin, rs), nil
 }
