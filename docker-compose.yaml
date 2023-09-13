@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.1.0
+    volumes:
+      - ./config/mysql/dev.cnf:/etc/mysql/conf.d/my.cnf
+      - ./config/mysql/schema:/docker-entrypoint-initdb.d
+      - ./tmp/logs/mysql:/var/log/mysql:delegated
+      - ./tmp/data/mysql:/var/lib/mysql:delegated
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345678
+    ports:
+      - 3316:3306
+
+  mysql_test:
+    container_name: mysql_test
+    image: mysql:8.1.0
+    volumes:
+      - ./config/mysql/test.cnf:/etc/mysql/conf.d/my.cnf
+      - ./config/mysql/schema:/docker-entrypoint-initdb.d
+      - ./tmp/logs/mysql_test:/var/log/mysql:delegated
+      - ./tmp/data/mysql_test:/var/lib/mysql:delegated
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345678
+    ports:
+      - 3326:3306

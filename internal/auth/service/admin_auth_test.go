@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/and-period/furumane/internal/auth/entity"
 	"github.com/and-period/furumane/pkg/cognito"
 	"github.com/and-period/furumane/proto/auth"
 	"github.com/stretchr/testify/assert"
@@ -19,6 +20,13 @@ func TestSignInAdmin(t *testing.T) {
 		RefreshToken: "refresh-token",
 		ExpiresIn:    3600,
 	}
+	admin := &entity.Admin{
+		ID:           "admin-id",
+		CognitoID:    "cognito-id",
+		ProviderType: entity.ProviderTypeEmail,
+		CreatedAt:    current,
+		UpdatedAt:    current,
+	}
 	tests := []struct {
 		name   string
 		setup  func(ctx context.Context, mocks *mocks)
@@ -29,7 +37,8 @@ func TestSignInAdmin(t *testing.T) {
 			name: "success",
 			setup: func(ctx context.Context, mocks *mocks) {
 				mocks.adminAuth.EXPECT().SignIn(ctx, "test@example.com", "password").Return(result, nil)
-				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("admin-id", nil)
+				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("cognito-id", nil)
+				mocks.db.admin.EXPECT().GetByCognitoID(ctx, "cognito-id").Return(admin, nil)
 			},
 			req: &auth.SignInAdminRequest{
 				Key:      "test@example.com",
@@ -82,6 +91,21 @@ func TestSignInAdmin(t *testing.T) {
 				code: codes.Internal,
 			},
 		},
+		{
+			name: "failed to get admin by cognito id",
+			setup: func(ctx context.Context, mocks *mocks) {
+				mocks.adminAuth.EXPECT().SignIn(ctx, "test@example.com", "password").Return(result, nil)
+				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("cognito-id", nil)
+				mocks.db.admin.EXPECT().GetByCognitoID(ctx, "cognito-id").Return(nil, assert.AnError)
+			},
+			req: &auth.SignInAdminRequest{
+				Key:      "test@example.com",
+				Password: "password",
+			},
+			expect: &testResponse{
+				code: codes.Internal,
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -94,6 +118,13 @@ func TestSignInAdmin(t *testing.T) {
 
 func TestSignInAdminWithOAuth(t *testing.T) {
 	t.Parallel()
+	admin := &entity.Admin{
+		ID:           "admin-id",
+		CognitoID:    "cognito-id",
+		ProviderType: entity.ProviderTypeOAuth,
+		CreatedAt:    current,
+		UpdatedAt:    current,
+	}
 	tests := []struct {
 		name   string
 		setup  func(ctx context.Context, mocks *mocks)
@@ -103,7 +134,8 @@ func TestSignInAdminWithOAuth(t *testing.T) {
 		{
 			name: "success",
 			setup: func(ctx context.Context, mocks *mocks) {
-				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("admin-id", nil)
+				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("cognito-id", nil)
+				mocks.db.admin.EXPECT().GetByCognitoID(ctx, "cognito-id").Return(admin, nil)
 			},
 			req: &auth.SignInAdminWithOAuthRequest{
 				AccessToken: "access-token",
@@ -132,6 +164,19 @@ func TestSignInAdminWithOAuth(t *testing.T) {
 			name: "failed to get username",
 			setup: func(ctx context.Context, mocks *mocks) {
 				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("", assert.AnError)
+			},
+			req: &auth.SignInAdminWithOAuthRequest{
+				AccessToken: "access-token",
+			},
+			expect: &testResponse{
+				code: codes.Internal,
+			},
+		},
+		{
+			name: "failed to get admin by cognito id",
+			setup: func(ctx context.Context, mocks *mocks) {
+				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("cognito-id", nil)
+				mocks.db.admin.EXPECT().GetByCognitoID(ctx, "cognito-id").Return(nil, assert.AnError)
 			},
 			req: &auth.SignInAdminWithOAuthRequest{
 				AccessToken: "access-token",
@@ -201,71 +246,20 @@ func TestSignOutAdmin(t *testing.T) {
 	}
 }
 
-func TestGetAdmin(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name   string
-		setup  func(ctx context.Context, mocks *mocks)
-		req    *auth.GetAdminRequest
-		expect *testResponse
-	}{
-		{
-			name: "success",
-			setup: func(ctx context.Context, mocks *mocks) {
-				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("admin-id", nil)
-			},
-			req: &auth.GetAdminRequest{
-				AccessToken: "access-token",
-			},
-			expect: &testResponse{
-				code: codes.OK,
-				body: &auth.GetAdminResponse{
-					Auth: &auth.AdminAuth{
-						AdminId:      "admin-id",
-						AccessToken:  "access-token",
-						RefreshToken: "",
-						ExpiresIn:    0,
-					},
-				},
-			},
-		},
-		{
-			name:  "invalid argument",
-			setup: func(ctx context.Context, mocks *mocks) {},
-			req:   &auth.GetAdminRequest{},
-			expect: &testResponse{
-				code: codes.InvalidArgument,
-			},
-		},
-		{
-			name: "failed to get username",
-			setup: func(ctx context.Context, mocks *mocks) {
-				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("", assert.AnError)
-			},
-			req: &auth.GetAdminRequest{
-				AccessToken: "access-token",
-			},
-			expect: &testResponse{
-				code: codes.Internal,
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.name, testGRPC(tt.setup, tt.expect, func(ctx context.Context, service *service) (proto.Message, error) {
-			return service.GetAdmin(ctx, tt.req)
-		}))
-	}
-}
-
 func TestRefreshAdminToken(t *testing.T) {
 	t.Parallel()
 	result := &cognito.AuthResult{
-		IDToken:      "",
+		IDToken:      "id-token",
 		AccessToken:  "access-token",
-		RefreshToken: "refresh-token",
+		RefreshToken: "",
 		ExpiresIn:    3600,
+	}
+	admin := &entity.Admin{
+		ID:           "admin-id",
+		CognitoID:    "cognito-id",
+		ProviderType: entity.ProviderTypeOAuth,
+		CreatedAt:    current,
+		UpdatedAt:    current,
 	}
 	tests := []struct {
 		name   string
@@ -277,7 +271,8 @@ func TestRefreshAdminToken(t *testing.T) {
 			name: "success",
 			setup: func(ctx context.Context, mocks *mocks) {
 				mocks.adminAuth.EXPECT().RefreshToken(ctx, "refresh-token").Return(result, nil)
-				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("admin-id", nil)
+				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("cognito-id", nil)
+				mocks.db.admin.EXPECT().GetByCognitoID(ctx, "cognito-id").Return(admin, nil)
 			},
 			req: &auth.RefreshAdminTokenRequest{
 				RefreshToken: "refresh-token",
@@ -288,7 +283,7 @@ func TestRefreshAdminToken(t *testing.T) {
 					Auth: &auth.AdminAuth{
 						AdminId:      "admin-id",
 						AccessToken:  "access-token",
-						RefreshToken: "refresh-token",
+						RefreshToken: "",
 						ExpiresIn:    3600,
 					},
 				},
@@ -319,6 +314,20 @@ func TestRefreshAdminToken(t *testing.T) {
 			setup: func(ctx context.Context, mocks *mocks) {
 				mocks.adminAuth.EXPECT().RefreshToken(ctx, "refresh-token").Return(result, nil)
 				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("", assert.AnError)
+			},
+			req: &auth.RefreshAdminTokenRequest{
+				RefreshToken: "refresh-token",
+			},
+			expect: &testResponse{
+				code: codes.Internal,
+			},
+		},
+		{
+			name: "failed to get admin by cognito id",
+			setup: func(ctx context.Context, mocks *mocks) {
+				mocks.adminAuth.EXPECT().RefreshToken(ctx, "refresh-token").Return(result, nil)
+				mocks.adminAuth.EXPECT().GetUsername(ctx, "access-token").Return("cognito-id", nil)
+				mocks.db.admin.EXPECT().GetByCognitoID(ctx, "cognito-id").Return(nil, assert.AnError)
 			},
 			req: &auth.RefreshAdminTokenRequest{
 				RefreshToken: "refresh-token",

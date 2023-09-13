@@ -6,9 +6,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/and-period/furumane/internal/auth/database"
+	mock_database "github.com/and-period/furumane/mock/auth/database"
 	mock_cognito "github.com/and-period/furumane/mock/pkg/cognito"
 	"github.com/and-period/furumane/pkg/cognito"
 	"github.com/and-period/furumane/pkg/jst"
+	"github.com/and-period/furumane/pkg/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -18,9 +21,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+var current = jst.Now()
+
 type mocks struct {
+	db        *dbmocks
 	adminAuth *mock_cognito.MockClient
 	userAuth  *mock_cognito.MockClient
+}
+
+type dbmocks struct {
+	admin *mock_database.MockAdmin
 }
 
 type testResponse struct {
@@ -29,7 +39,8 @@ type testResponse struct {
 }
 
 type testOptions struct {
-	now func() time.Time
+	now  func() time.Time
+	uuid func() string
 }
 
 type testOption func(opts *testOptions)
@@ -42,30 +53,52 @@ func withNow(now time.Time) testOption {
 	}
 }
 
+func withUUID(uuid string) testOption {
+	return func(opts *testOptions) {
+		opts.uuid = func() string {
+			return uuid
+		}
+	}
+}
+
 type grpcCaller func(ctx context.Context, service *service) (proto.Message, error)
 
 func newMocks(ctrl *gomock.Controller) *mocks {
 	return &mocks{
+		db:        newDBMocks(ctrl),
 		adminAuth: mock_cognito.NewMockClient(ctrl),
 		userAuth:  mock_cognito.NewMockClient(ctrl),
 	}
 }
 
+func newDBMocks(ctrl *gomock.Controller) *dbmocks {
+	return &dbmocks{
+		admin: mock_database.NewMockAdmin(ctrl),
+	}
+}
+
 func newService(mocks *mocks, opts ...testOption) *service {
 	dopts := &testOptions{
-		now: jst.Now,
+		now:  jst.Now,
+		uuid: uuid.New,
 	}
 	for i := range opts {
 		opts[i](dopts)
 	}
 	params := &Params{
 		WaitGroup: &sync.WaitGroup{},
+		Database: &database.Database{
+			Admin: mocks.db.admin,
+		},
 		AdminAuth: mocks.adminAuth,
 		UserAuth:  mocks.userAuth,
 	}
 	service := NewService(params).(*service)
 	service.now = func() time.Time {
 		return dopts.now()
+	}
+	service.uuid = func() string {
+		return dopts.uuid()
 	}
 	return service
 }
@@ -151,11 +184,6 @@ func TestGRPCError(t *testing.T) {
 			expect: codes.Canceled,
 		},
 		{
-			name:   "cognito invalid argument",
-			input:  cognito.ErrInvalidArgument,
-			expect: codes.InvalidArgument,
-		},
-		{
 			name:   "cognito timeout",
 			input:  cognito.ErrTimeout,
 			expect: codes.DeadlineExceeded,
@@ -174,6 +202,32 @@ func TestGRPCError(t *testing.T) {
 			name:   "cognito unauthenticated",
 			input:  cognito.ErrUnauthenticated,
 			expect: codes.Unauthenticated,
+		},
+		{
+			name:   "cognito not found",
+			input:  cognito.ErrNotFound,
+			expect: codes.Unauthenticated,
+		},
+		// database error
+		{
+			name:   "database deadline exceeded",
+			input:  database.ErrDeadlineExceeded,
+			expect: codes.DeadlineExceeded,
+		},
+		{
+			name:   "database not found",
+			input:  database.ErrNotFound,
+			expect: codes.NotFound,
+		},
+		{
+			name:   "database already exists",
+			input:  database.ErrAlreadyExists,
+			expect: codes.AlreadyExists,
+		},
+		{
+			name:   "database failed precondition",
+			input:  database.ErrFailedPrecondition,
+			expect: codes.FailedPrecondition,
 		},
 	}
 	for _, tt := range tests {

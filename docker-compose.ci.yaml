@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.1.0
+    volumes:
+      - ./config/mysql/test.ci.cnf:/etc/mysql/conf.d/my.cnf
+      - ./config/mysql/schema:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345678
+    ports:
+      - 3306:3306
