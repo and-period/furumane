@@ -28,7 +28,5 @@ RUN apk add --update --no-cache \
 
 COPY --from=builder /go/src/github.com/and-period/furumane/app ./app
 
-ADD ./api/config ./config
-
 EXPOSE 9000 9001
 CMD ["./app"]
