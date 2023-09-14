@@ -6,10 +6,10 @@ CREATE TABLE IF NOT EXISTS `furumane`.`admins` (
   `provider_type` INT          NOT NULL,          -- 認証種別
   `email`         VARCHAR(256) NULL DEFAULT NULL, -- メールアドレス
   `exists`        TINYINT      NULL DEFAULT 1,    -- 有効化フラグ
-  `created_at`    DATETIME     NOT NULL,          -- 登録日時
-  `updated_at`    DATETIME     NOT NULL,          -- 更新日時
-  `verified_at`   DATETIME     NULL DEFAULT NULL, -- 確認日時
-  `deleted_at`    DATETIME     NULL DEFAULT NULL, -- 退会日時
+  `created_at`    DATETIME(3)  NOT NULL,          -- 登録日時
+  `updated_at`    DATETIME(3)  NOT NULL,          -- 更新日時
+  `verified_at`   DATETIME(3)  NULL DEFAULT NULL, -- 確認日時
+  `deleted_at`    DATETIME(3)  NULL DEFAULT NULL, -- 退会日時
   PRIMARY KEY(`id`)
 );
 
