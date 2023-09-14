@@ -12,7 +12,7 @@ type app struct {
 func NewApp() *app {
 	cmd := &cobra.Command{
 		Use:   "server",
-		Short: "auth service server",
+		Short: "auth server",
 	}
 	app := &app{Command: cmd}
 	app.RunE = func(c *cobra.Command, args []string) error {
