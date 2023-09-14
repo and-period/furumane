@@ -38,3 +38,6 @@ bin
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# MacOS
+.DS_Store
