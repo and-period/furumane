@@ -1,5 +1,6 @@
 .PHONY: help setup install fmt vet lint test build proto mockgen
 
+BUF_VERSION := 1.26.1
 GOFUMPT_VERSION := 0.5.0
 GOLANGCI_VERSION := 1.54.2
 MOCKGEN_VERSION := 0.2.0
@@ -16,6 +17,7 @@ setup: proto install ## 初回環境構築用
 install: ## 依存ライブラリのインストール
 	go install mvdan.cc/gofumpt@v${GOFUMPT_VERSION}
 	go install go.uber.org/mock/mockgen@v${MOCKGEN_VERSION}
+	go install github.com/bufbuild/buf/cmd/buf@v${BUF_VERSION}
 
 clean:
 	rm -rf ./proto/**/*.pb.go ./proto/**/*.pb.*.go
