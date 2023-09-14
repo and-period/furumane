@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.21.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.39
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.26.1
+	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.21.3
 	github.com/envoyproxy/protoc-gen-validate v0.9.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/uuid v1.3.0
@@ -13,7 +14,9 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.0
 	github.com/jbenet/go-base58 v0.0.0-20150317085156-6237cf65f3a6
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/newrelic/go-agent/v3 v3.2.0
 	github.com/prometheus/client_golang v1.16.0
+	github.com/rafaelhl/gorm-newrelic-telemetry-plugin v1.0.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4

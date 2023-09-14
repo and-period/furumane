@@ -14,16 +14,20 @@ type config struct {
 	ShutdownDelaySec     int64  `envconfig:"SHUTDOWN_DELAY_SEC" default:"20"`
 	LogPath              string `envconfig:"LOG_PATH" default:""`
 	LogLevel             string `envconfig:"LOG_LEVEL" default:"info"`
-	NewRelicLicense      string `envconfig:"NEW_RELIC_LICENSE" default:""`
-	NewRelicSecretName   string `envconfig:"NEW_RELIC_SECRET_NAME" default:""`
+	DBSocket             string `envconfig:"DB_SOCKET" default:"tcp"`
+	DBHost               string `envconfig:"DB_HOST" default:"127.0.0.1"`
+	DBPort               string `envconfig:"DB_PORT" default:"3306"`
+	DBDatabase           string `envconfig:"DB_DATABASE" default:"furumane"`
+	DBUsername           string `envconfig:"DB_USERNAME" default:"root"`
+	DBPassword           string `envconfig:"DB_PASSWORD" default:""`
+	DBTimeZone           string `envconfig:"DB_TIMEZONE" default:"Asia/Tokyo"`
+	DBEnabledTLS         bool   `envconfig:"DB_ENABLED_TLS" default:"false"`
+	DBSecretName         string `envconfig:"DB_SECRET_NAME" default:""`
 	AWSRegion            string `envconfig:"AWS_REGION" default:"ap-northeast-1"`
 	CognitoAdminPoolID   string `envconfig:"COGNITO_Admin_POOL_ID" default:""`
 	CognitoAdminClientID string `envconfig:"COGNITO_Admin_CLIENT_ID" default:""`
 	CognitoUserPoolID    string `envconfig:"COGNITO_USER_POOL_ID" default:""`
 	CognitoUserClientID  string `envconfig:"COGNITO_USER_CLIENT_ID" default:""`
-	SlackAPIToken        string `envconfig:"SLACK_API_TOKEN" default:""`
-	SlackChannelID       string `envconfig:"SLACK_CHANNEL_ID" default:""`
-	SlackSecretName      string `envconfig:"SLACK_SECRET_NAME" default:""`
 }
 
 func newConfig() (*config, error) {
