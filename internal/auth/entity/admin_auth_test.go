@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/and-period/furumane/pkg/cognito"
-	"github.com/and-period/furumane/proto/auth"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,14 +30,5 @@ func TestAdminAuth(t *testing.T) {
 			ExpiresIn:    3600,
 		}
 		assert.Equal(t, expect, actual)
-	})
-	t.Run("proto", func(t *testing.T) {
-		expect := &auth.AdminAuth{
-			AdminId:      "admin-id",
-			AccessToken:  "access-token",
-			RefreshToken: "refresh-token",
-			ExpiresIn:    3600,
-		}
-		assert.Equal(t, expect, actual.Proto())
 	})
 }
