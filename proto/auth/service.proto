@@ -3,6 +3,8 @@ syntax = "proto3";
 package proto.auth;
 
 option go_package = "github.com/and-period/furumane/proto/auth";
+option java_package = "jp.co.andperiod.furumane.auth";
+option java_outer_classname = "AuthService";
 
 import "validate/validate.proto";
 import "proto/auth/admin.proto";
