@@ -10,7 +10,8 @@ WORKDIR /go/src/github.com/and-period/furumane
 
 RUN apk add --update --no-cache \
       git \
-      make
+      make \
+      tzdata
 
 ADD . .
 
@@ -28,6 +29,7 @@ RUN apk add --update --no-cache \
       ca-certificates
 
 COPY --from=builder /go/src/github.com/and-period/furumane/app ./app
+COPY --from=builder /usr/share/zoneinfo/Asia/Tokyo /usr/share/zoneinfo/Asia/Tokyo
 
 EXPOSE 9000 9001
 CMD ["./app"]
