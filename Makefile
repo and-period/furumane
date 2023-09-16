@@ -24,7 +24,6 @@ vet: ## コードの静的解析
 	go vet $(LINT_PACKAGES)
 
 lint: ## Linterの実行
-	buf lint
 	./bin/golangci-lint run -c .golangci.yaml ./...
 
 test: ## テストの実行
