@@ -2,9 +2,7 @@ package entity
 
 import (
 	"testing"
-	"time"
 
-	"github.com/and-period/furumane/proto/auth"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,15 +24,5 @@ func TestAdmin(t *testing.T) {
 			Email:        "test@example.com",
 		}
 		assert.Equal(t, expect, actual)
-	})
-	t.Run("proto", func(t *testing.T) {
-		expect := &auth.Admin{
-			Id:           "admin-id",
-			ProviderType: auth.ProviderType_EMAIL,
-			Email:        "test@example.com",
-			CreatedAt:    time.Time{}.Unix(),
-			UpdatedAt:    time.Time{}.Unix(),
-		}
-		assert.Equal(t, expect, actual.Proto())
 	})
 }

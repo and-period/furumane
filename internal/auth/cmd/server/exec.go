@@ -7,13 +7,10 @@ import (
 	"syscall"
 	"time"
 
-	apgrpc "github.com/and-period/furumane/pkg/grpc"
-	aphttp "github.com/and-period/furumane/pkg/http"
+	"github.com/and-period/furumane/pkg/http"
 	"github.com/and-period/furumane/pkg/log"
-	"github.com/and-period/furumane/proto/auth"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
-	"google.golang.org/grpc"
 )
 
 func (a *app) run() error {
@@ -40,20 +37,12 @@ func (a *app) run() error {
 		return err
 	}
 
-	// gRPC Serverの設定
-	gopts := apgrpc.NewGRPCOptions(apgrpc.WithLogger(logger))
-
-	s := grpc.NewServer(gopts...)
-	auth.RegisterAuthServiceServer(s, reg.service)
-
-	gs, err := apgrpc.NewGRPCServer(s, conf.Port)
-	if err != nil {
-		logger.Error("Failed to new grpc server", zap.Error(err))
-		return err
-	}
+	// HTTP Serverの設定
+	rt := newRouter(reg, logger)
+	hs := http.NewHTTPServer(rt, conf.Port)
 
 	// Metrics Serverの設定
-	ms := aphttp.NewMetricsServer(conf.MetricsPort)
+	ms := http.NewMetricsServer(conf.MetricsPort)
 
 	// Serverの起動
 	eg, ectx := errgroup.WithContext(ctx)
@@ -64,8 +53,8 @@ func (a *app) run() error {
 		return
 	})
 	eg.Go(func() (err error) {
-		if err = gs.Serve(); err != nil {
-			logger.Error("Failed to run grpc server", zap.Error(err))
+		if err = hs.Serve(); err != nil {
+			logger.Error("Failed to run http server", zap.Error(err))
 		}
 		return
 	})
@@ -86,7 +75,10 @@ func (a *app) run() error {
 
 	// Serverの停止
 	logger.Info("Shutdown...")
-	gs.Stop()
+	if err = hs.Stop(ectx); err != nil {
+		logger.Error("Failed to stopeed http server", zap.Error(err))
+		return err
+	}
 	if err = ms.Stop(ectx); err != nil {
 		logger.Error("Failed to stopeed metrics server", zap.Error(err))
 		return err

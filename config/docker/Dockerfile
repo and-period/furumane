@@ -14,8 +14,6 @@ RUN apk add --update --no-cache \
 
 ADD . .
 
-RUN make install
-RUN make proto
 RUN make build SERVICE=${SERVICE}
 
 # 実行用コンテナ

@@ -1,9 +1,6 @@
 package entity
 
-import (
-	"github.com/and-period/furumane/pkg/cognito"
-	"github.com/and-period/furumane/proto/auth"
-)
+import "github.com/and-period/furumane/pkg/cognito"
 
 // AdminAuth - 管理者認証情報
 type AdminAuth struct {
@@ -19,14 +16,5 @@ func NewAdminAuth(admin *Admin, rs *cognito.AuthResult) *AdminAuth {
 		AccessToken:  rs.AccessToken,
 		RefreshToken: rs.RefreshToken,
 		ExpiresIn:    rs.ExpiresIn,
-	}
-}
-
-func (a *AdminAuth) Proto() *auth.AdminAuth {
-	return &auth.AdminAuth{
-		AdminId:      a.AdminID,
-		AccessToken:  a.AccessToken,
-		RefreshToken: a.RefreshToken,
-		ExpiresIn:    a.ExpiresIn,
 	}
 }

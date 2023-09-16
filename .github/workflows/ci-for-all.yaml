@@ -26,9 +26,6 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v3
 
-    - name: Setup buf
-      uses: bufbuild/buf-setup-action@v1
-
     - name: Use Golang ${{ env.GO_VERSION }}
       uses: actions/setup-go@v4
       with:
@@ -64,9 +61,6 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v3
 
-    - name: Setup buf
-      uses: bufbuild/buf-setup-action@v1
-
     - name: Use Golang ${{ env.GO_VERSION }}
       uses: actions/setup-go@v4
       with:
@@ -99,9 +93,6 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v3
-
-    - name: Setup buf
-      uses: bufbuild/buf-setup-action@v1
 
     - name: Use Golang ${{ env.GO_VERSION }}
       uses: actions/setup-go@v4
@@ -141,9 +132,6 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v3
-
-    - name: Setup buf
-      uses: bufbuild/buf-setup-action@v1
 
     - name: Use Golang ${{ env.GO_VERSION }}
       uses: actions/setup-go@v4

@@ -23,6 +23,11 @@ type config struct {
 	DBTimeZone           string `envconfig:"DB_TIMEZONE" default:"Asia/Tokyo"`
 	DBEnabledTLS         bool   `envconfig:"DB_ENABLED_TLS" default:"false"`
 	DBSecretName         string `envconfig:"DB_SECRET_NAME" default:""`
+	NewRelicLicense      string `envconfig:"NEW_RELIC_LICENSE" default:""`
+	NewRelicSecretName   string `envconfig:"NEW_RELIC_SECRET_NAME" default:""`
+	SlackAPIToken        string `envconfig:"SLACK_API_TOKEN" default:""`
+	SlackChannelID       string `envconfig:"SLACK_CHANNEL_ID" default:""`
+	SlackSecretName      string `envconfig:"SLACK_SECRET_NAME" default:""`
 	AWSRegion            string `envconfig:"AWS_REGION" default:"ap-northeast-1"`
 	CognitoAdminPoolID   string `envconfig:"COGNITO_Admin_POOL_ID" default:""`
 	CognitoAdminClientID string `envconfig:"COGNITO_Admin_CLIENT_ID" default:""`

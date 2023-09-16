@@ -3,7 +3,6 @@ package entity
 import (
 	"time"
 
-	"github.com/and-period/furumane/proto/auth"
 	"gorm.io/gorm"
 )
 
@@ -31,15 +30,5 @@ func NewAdmin(params *AdminParams) *Admin {
 		CognitoID:    params.CognitID,
 		ProviderType: params.ProviderType,
 		Email:        params.Email,
-	}
-}
-
-func (a *Admin) Proto() *auth.Admin {
-	return &auth.Admin{
-		Id:           a.ID,
-		ProviderType: auth.ProviderType(a.ProviderType),
-		Email:        a.Email,
-		CreatedAt:    a.CreatedAt.Unix(),
-		UpdatedAt:    a.UpdatedAt.Unix(),
 	}
 }
