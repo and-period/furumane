@@ -29,8 +29,8 @@ type config struct {
 	SlackChannelID       string `envconfig:"SLACK_CHANNEL_ID" default:""`
 	SlackSecretName      string `envconfig:"SLACK_SECRET_NAME" default:""`
 	AWSRegion            string `envconfig:"AWS_REGION" default:"ap-northeast-1"`
-	CognitoAdminPoolID   string `envconfig:"COGNITO_Admin_POOL_ID" default:""`
-	CognitoAdminClientID string `envconfig:"COGNITO_Admin_CLIENT_ID" default:""`
+	CognitoAdminPoolID   string `envconfig:"COGNITO_ADMIN_POOL_ID" default:""`
+	CognitoAdminClientID string `envconfig:"COGNITO_ADMIN_CLIENT_ID" default:""`
 	CognitoUserPoolID    string `envconfig:"COGNITO_USER_POOL_ID" default:""`
 	CognitoUserClientID  string `envconfig:"COGNITO_USER_CLIENT_ID" default:""`
 }
