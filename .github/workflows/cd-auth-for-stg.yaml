@@ -7,7 +7,6 @@ on:
     - '.github/workflows/cd-auth-for-stg.yaml'
     - 'internal/auth/**'
     - 'pkg/**'
-    - 'proto/auth/**'
 
 env:
   TZ: 'Asia/Tokyo'
