@@ -30,7 +30,7 @@ test: ## テストの実行
 	go test -v -cover -coverprofile=coverage.txt -covermode=atomic $(TEST_PACKAGES)
 
 build: ## アプリケーションのコンパイル
-	go build -o ./app ./cmd/${SERVICE}/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ./app ./cmd/${SERVICE}/main.go
 
 mockgen: ## ユニットテストで使用するモックの生成
 	rm -rf ./mock
