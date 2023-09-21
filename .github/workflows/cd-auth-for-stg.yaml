@@ -16,6 +16,7 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_AUTH_SERVICE }}
   ECR_IMAGE_TAG: ${{ github.sha }}
   IMAGE_PATH: ./config/docker/Dockerfile
+  SERVICE: auth
 
 permissions:
   id-token: write
@@ -54,7 +55,7 @@ jobs:
       id: build-image
       run: |
         ECR_REPOSITORY_URL=${ECR_REGISTRY}/${ECR_REPOSITORY}
-        docker build -f ${IMAGE_PATH} --build-arg SERVICE=auth -t ${ECR_REPOSITORY_URL} .
+        docker build -f ${IMAGE_PATH} --build-arg SERVICE=${SERVICE} -t ${ECR_REPOSITORY_URL} .
         docker tag ${ECR_REPOSITORY_URL} ${ECR_REPOSITORY_URL}:${ECR_IMAGE_TAG}
         docker tag ${ECR_REPOSITORY_URL} ${ECR_REPOSITORY_URL}:latest
         docker push -a ${ECR_REPOSITORY_URL}
