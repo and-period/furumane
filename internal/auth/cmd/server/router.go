@@ -29,6 +29,12 @@ func newRouter(reg *registry, logger *zap.Logger) *gin.Engine {
 	opts = append(opts, ginzip.Gzip(ginzip.DefaultCompression))
 	opts = append(opts, ginzap.RecoveryWithZap(logger, true))
 
+	if !reg.debugMode {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	rt := gin.New()
 	rt.Use(opts...)
 
