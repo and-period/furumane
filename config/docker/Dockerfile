@@ -26,7 +26,8 @@ ENV TZ Asia/Tokyo
 WORKDIR /var/api
 
 RUN apk add --update --no-cache \
-      ca-certificates
+      ca-certificates \
+      curl
 
 COPY --from=builder /go/src/github.com/and-period/furumane/app ./app
 COPY --from=builder /usr/share/zoneinfo/Asia/Tokyo /usr/share/zoneinfo/Asia/Tokyo
