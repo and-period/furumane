@@ -31,5 +31,5 @@ RUN apk add --update --no-cache \
 COPY --from=builder /go/src/github.com/and-period/furumane/app ./app
 COPY --from=builder /usr/share/zoneinfo/Asia/Tokyo /usr/share/zoneinfo/Asia/Tokyo
 
-EXPOSE 9000 9001
+EXPOSE 8080 9090
 CMD ["./app"]
