@@ -77,7 +77,7 @@ func (w *wrapResponseWriter) errorResponse() (*response.ErrorResponse, error) {
 
 func accessLogger(logger *zap.Logger, reg *registry) gin.HandlerFunc {
 	skipPaths := map[string]bool{
-		// "/health": true, // TODO: デバッグのため一時的にコメントアウト
+		// "/health": true, // TODO: デバッグのため、一時的にコメントアウト
 	}
 
 	return func(ctx *gin.Context) {
