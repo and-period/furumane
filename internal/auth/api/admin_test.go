@@ -23,6 +23,7 @@ func TestSignUpAdmin(t *testing.T) {
 		CognitoID:    uuid.Base58Encode(adminID),
 		ProviderType: entity.ProviderTypeEmail,
 		Email:        "test@example.com",
+		PhoneNumber:  "09012341234",
 	}
 	tests := []struct {
 		name   string
@@ -37,6 +38,7 @@ func TestSignUpAdmin(t *testing.T) {
 			},
 			req: &request.SignUpAdminRequest{
 				Email:                "test@example.com",
+				PhoneNumber:          "09012341234",
 				Password:             "password",
 				PasswordConfirmation: "password",
 			},
@@ -62,6 +64,7 @@ func TestSignUpAdmin(t *testing.T) {
 			},
 			req: &request.SignUpAdminRequest{
 				Email:                "test@example.com",
+				PhoneNumber:          "09012341234",
 				Password:             "password",
 				PasswordConfirmation: "password",
 			},

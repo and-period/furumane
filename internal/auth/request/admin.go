@@ -2,6 +2,7 @@ package request
 
 type SignUpAdminRequest struct {
 	Email                string `json:"email" validate:"required,max=256,email"`                   // メールアドレス
+	PhoneNumber          string `json:"phoneNumber" validate:"required"`                           // 電話番号
 	Password             string `json:"password" validate:"min=8,max=32,password"`                 // パスワード
 	PasswordConfirmation string `json:"passwordConfirmation" validate:"required,eqfield=Password"` // パスワード（確認用）
 }

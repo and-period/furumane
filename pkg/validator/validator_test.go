@@ -47,9 +47,16 @@ func TestValidator(t *testing.T) {
 			hasErr: false,
 		},
 		{
-			name: "valid phone number",
+			name: "valid phone number（携帯電話）",
 			input: &input{
-				PhoneNumber: "+819012341234",
+				PhoneNumber: "09012341234",
+			},
+			hasErr: false,
+		},
+		{
+			name: "valid phone number（市外局番）",
+			input: &input{
+				PhoneNumber: "0312341234",
 			},
 			hasErr: false,
 		},

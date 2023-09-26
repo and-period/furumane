@@ -43,13 +43,15 @@ func (c *controller) SignUpAdmin(ctx *gin.Context) {
 		CognitID:     cognitoID,
 		ProviderType: entity.ProviderTypeEmail,
 		Email:        req.Email,
+		PhoneNumber:  req.PhoneNumber,
 	}
 	admin := entity.NewAdmin(params)
 	fn := func(ctx context.Context) error {
 		params := &cognito.SignUpParams{
-			Username: cognitoID,
-			Email:    req.Email,
-			Password: req.Password,
+			Username:    cognitoID,
+			Email:       admin.Email,
+			PhoneNumber: admin.InternationalPhoneNumber(),
+			Password:    req.Password,
 		}
 		return c.adminAuth.SignUp(ctx, params)
 	}
