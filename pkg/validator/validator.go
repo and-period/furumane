@@ -15,7 +15,7 @@ type Validator interface {
 const (
 	hiraganaString    = "^[ぁ-ゔー]*$"
 	passwordString    = "^[a-zA-Z0-9_!@#$_%^&*.?()-=+]*$"
-	phoneNumberString = "^\\+[0-9]{11,17}$"
+	phoneNumberString = "^0[0-9]{9,10}$"
 )
 
 var (

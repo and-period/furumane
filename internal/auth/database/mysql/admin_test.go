@@ -487,6 +487,7 @@ func fakeAdmin(adminID, cognitoID, email string, now time.Time) *entity.Admin {
 		CognitoID:    cognitoID,
 		ProviderType: entity.ProviderTypeEmail,
 		Email:        email,
+		PhoneNumber:  "09012341234",
 		CreatedAt:    now,
 		UpdatedAt:    now,
 		VerifiedAt:   now,

@@ -15,6 +15,7 @@ func NewAdmin(admin *entity.Admin) *Admin {
 			ID:           admin.ID,
 			ProviderType: admin.ProviderType,
 			Email:        admin.Email,
+			PhoneNumber:  admin.PhoneNumber,
 			CreatedAt:    admin.CreatedAt,
 			UpdatedAt:    admin.UpdatedAt,
 		},

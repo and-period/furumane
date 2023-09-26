@@ -13,6 +13,7 @@ func TestAdmin(t *testing.T) {
 		CognitID:     "cognito-id",
 		ProviderType: ProviderTypeEmail,
 		Email:        "test@example.com",
+		PhoneNumber:  "09012341234",
 	}
 	actual := NewAdmin(params)
 
@@ -22,7 +23,13 @@ func TestAdmin(t *testing.T) {
 			CognitoID:    "cognito-id",
 			ProviderType: ProviderTypeEmail,
 			Email:        "test@example.com",
+			PhoneNumber:  "09012341234",
 		}
 		assert.Equal(t, expect, actual)
+	})
+	t.Run("international phone number", func(t *testing.T) {
+		assert.Equal(t, "+819012341234", actual.InternationalPhoneNumber())
+		actual := &Admin{}
+		assert.Empty(t, actual.InternationalPhoneNumber())
 	})
 }
